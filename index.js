@@ -23,7 +23,7 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
+// handle the call to the api with no date
 app.get("/api", (req, res) => {
   const now = new Date();
   const options = {
@@ -47,12 +47,14 @@ app.get("/api", (req, res) => {
 app.get("/api/:date?", (req, res) => {
   const { date } = req.params;
   let dateResponse = {};
-  console.log("date is: ", date);
-  const dateObj = new Date(date * 1); //coerce to number?
+  let parsedDate = +date;
+  if (Number.isNaN(Number(date))) {
+    parsedDate = Date.parse(date);
+  } 
+  const dateObj = new Date(parsedDate); 
   
   console.log("dateObj is: ", dateObj);
   if (Number.isNaN(dateObj.valueOf())) {
-    console.log("dateObj is not a number result: ",dateObj.valueOf());
     dateResponse = { error: "Invalid Date" };
   } else {
     dateResponse = { unix: dateObj.getTime(), utc: dateObj.toUTCString() };
