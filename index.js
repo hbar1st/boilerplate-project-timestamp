@@ -23,6 +23,22 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+
+app.get("/api", (req, res) => {
+  const now = new Date();
+  const options = {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+  let dateResponse = {
+    unix: now.getTime(),
+    utc: now.toUTCString()
+  };
+  res.json(dateResponse);
+});
+
 /**
  * 
  * A request to /api/:date? with a valid date should return a JSON object 
@@ -32,20 +48,23 @@ app.get("/api/:date", (req, res) => {
   const { date } = req.params;
   const now = new Date().toString();
   let dateResponse = {
-    unix: now,
-    utc: now,
+    unix: now.toUTCString(),
+    utc: now.toString(),
   };
   if (date !== "") {
-    const dateObj = new Date(date);
-    if (isNaN(dateObj)) {
+    console.log("date is: ", date);
+    const dateObj = new Date(date * 1000);
+    if (isNaN(dateObj.valueOf())) {
+      console.log("dateObj result: ",dateObj.valueOf());
       dateResponse = { error: "Invalid Date" };
     } else {
-      dateResponse = { unix: "good Date", utc: "good time" };
+      dateResponse = { unix: Math.floor(dateObj.getTime() / 1000), utc: dateObj.toUTCString() };
     }
-    
   }
   res.json(dateResponse);
 });
+
+
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
