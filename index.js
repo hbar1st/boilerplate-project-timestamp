@@ -40,27 +40,24 @@ app.get("/api", (req, res) => {
 });
 
 /**
- * 
- * A request to /api/:date? with a valid date should return a JSON object 
- * with a unix key that is a Unix timestamp of the input date in milliseconds (as type Number)
- */
-app.get("/api/:date", (req, res) => {
+* 
+* A request to /api/:date? with a valid date should return a JSON object 
+* with a unix key that is a Unix timestamp of the input date in milliseconds (as type Number)
+*/
+app.get("/api/:date?", (req, res) => {
   const { date } = req.params;
-  const now = new Date().toString();
-  let dateResponse = {
-    unix: now.toUTCString(),
-    utc: now.toString(),
-  };
-  if (date !== "") {
-    console.log("date is: ", date);
-    const dateObj = new Date(date * 1000);
-    if (isNaN(dateObj.valueOf())) {
-      console.log("dateObj result: ",dateObj.valueOf());
-      dateResponse = { error: "Invalid Date" };
-    } else {
-      dateResponse = { unix: Math.floor(dateObj.getTime() / 1000), utc: dateObj.toUTCString() };
-    }
+  let dateResponse = {};
+  console.log("date is: ", date);
+  const dateObj = new Date(date * 1); //coerce to number?
+  
+  console.log("dateObj is: ", dateObj);
+  if (Number.isNaN(dateObj.valueOf())) {
+    console.log("dateObj is not a number result: ",dateObj.valueOf());
+    dateResponse = { error: "Invalid Date" };
+  } else {
+    dateResponse = { unix: dateObj.getTime(), utc: dateObj.toUTCString() };
   }
+  
   res.json(dateResponse);
 });
 
